@@ -51,7 +51,7 @@ class Transaction(AbstractResource):
         url = self.BASE_URL
         pagarme_response = requests.post(url, data=post_data)
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
             self.error(pagarme_response.content)
 
@@ -70,7 +70,7 @@ class Transaction(AbstractResource):
         data = {'api_key': self.api_key}
         pagarme_response = requests.post(url, data=data)
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
             self.error(pagarme_response.content)
 
@@ -105,7 +105,7 @@ class Transaction(AbstractResource):
         url = self.BASE_URL + '/' + str(id)
         pagarme_response = requests.get(url, data=self.get_data())
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
             self.error(pagarme_response.content)
 
@@ -116,6 +116,6 @@ class Transaction(AbstractResource):
         url = self.BASE_URL + '/' + str(self.id) + '/refund'
         pagarme_response = requests.post(url, data=self.get_data())
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
             self.error(pagarme_response.content)

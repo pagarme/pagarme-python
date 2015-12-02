@@ -136,8 +136,8 @@ class Pagarme(object):
         url = Class.BASE_URL
         pagarme_response = requests.get(url, params=data)
         if pagarme_response.status_code != 200:
-            self.error(pagarme_response.content)
-        responses = json.loads(pagarme_response.content)
+            self.error(pagarme_response.content)            
+        responses = json.loads(pagarme_response.content.decode(encoding='UTF-8'))
         resources = []
         for response in responses:
             resource = Class(api_key=self.api_key)

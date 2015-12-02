@@ -38,7 +38,7 @@ class Plan(AbstractResource):
         data = {'api_key': self.data['api_key']}
         pagarme_response = requests.get(url, params=data)
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
             self.error(pagarme_response.content)
 
@@ -88,7 +88,7 @@ class Subscription(AbstractResource):
         data = {'api_key': self.data['api_key']}
         pagarme_response = requests.get(url, params=data)
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
             self.error(pagarme_response.content)
 
@@ -98,7 +98,7 @@ class Subscription(AbstractResource):
         url = self.BASE_URL + '/{id}/cancel'.format(id=self.data['id'])
         pagarme_response = requests.post(url, data={'api_key': self.data['api_key']})
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
             self.error(pagarme_response.content)
 
@@ -108,8 +108,8 @@ class Subscription(AbstractResource):
         url = self.BASE_URL + '/{id}/transactions'.format(id=self.data['id'])
         pagarme_response = requests.get(url, params={'api_key': self.data['api_key']})
         if pagarme_response.status_code != 200:
-            self.error(pagarme_response.content)
-        response = json.loads(pagarme_response.content)
+            self.error(pagarme_response.content)            
+        response = json.loads(pagarme_response.content.decode(encoding='UTF-8'))
         transactions = []
         for transaction in response:
             t = Transaction(self.data['api_key'])

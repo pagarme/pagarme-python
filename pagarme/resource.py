@@ -22,7 +22,7 @@ class AbstractResource(object):
         url = self.BASE_URL
         pagarme_response = requests.post(url, data=self.get_data())
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
             self.error(pagarme_response.content)
 
