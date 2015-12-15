@@ -22,6 +22,7 @@ class Transaction(AbstractResource):
             metadata={},
             soft_descriptor='',
             customer=None,
+            split_rules=None,
             **kwargs):
 
         self.amount = amount
@@ -36,6 +37,7 @@ class Transaction(AbstractResource):
         self.id = None
         self.data = {}
         self.customer = customer
+        self.split_rules = split_rules
 
         for key, value in kwargs.items():
             self.data[key] = value
@@ -87,7 +89,7 @@ class Transaction(AbstractResource):
             d['installments'] = self.installments
             d['payment_method'] = self.payment_method
             d['soft_descriptor'] = self.soft_descriptor[:13]
-
+        
         if self.metadata:
             for key, value in self.metadata.items():
                 new_key = 'metadata[{key}]'.format(key=key)
@@ -98,7 +100,12 @@ class Transaction(AbstractResource):
 
         if self.customer:
             d.update(self.customer.get_anti_fraud_data())
-
+            
+        if self.split_rules:
+            cont = 0
+            for s in self.split_rules: 
+                d.update(s.get_split_data(cont))
+                cont=cont+1
         return d
 
     def find_by_id(self, id=None):
@@ -119,3 +126,14 @@ class Transaction(AbstractResource):
             self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
             self.error(pagarme_response.content)
+
+
+    def find_split_rule(self, id=None):
+        url = self.BASE_URL + '/' + str(id) + '/split_rules'
+        pagarme_response = requests.get(url, data=self.get_data())
+        if pagarme_response.status_code == 200:
+            return json.loads(pagarme_response.content.decode(encoding='UTF-8'))
+        else:
+            self.error(pagarme_response.content)
+            
+            
