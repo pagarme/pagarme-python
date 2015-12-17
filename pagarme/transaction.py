@@ -43,6 +43,7 @@ class Transaction(AbstractResource):
             self.data[key] = value
 
     def error(self, response):
+        print(response)
         data = json.loads(response)
         e = data['errors'][0]
         error_string = e['type'] + ' - ' + e['message']
@@ -65,11 +66,19 @@ class Transaction(AbstractResource):
         self.metadata = data['metadata']
         self.data = data
 
-    def capture(self):
-        if self.id is None:
-            raise NotBoundException('First try search your transaction')
-        url = self.BASE_URL + '/' + str(self.id) + '/caputre'
-        data = {'api_key': self.api_key}
+    def capture(self, _id=None, _amount=None):
+        if _id is None:
+            if self.id is None:
+                raise NotBoundException('First try search your transaction')
+        else:
+            self.id = _id
+            self.amount = _amount
+            
+        url = self.BASE_URL + '/' + str(self.id) + '/capture'
+        if _amount:
+            data = {'api_key': self.api_key, 'amount': self.amount}
+        else:
+            data = {'api_key': self.api_key}
         pagarme_response = requests.post(url, data=data)
         if pagarme_response.status_code == 200:
             self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
