@@ -58,7 +58,7 @@ class Recipient(AbstractResource):
         if pagarme_response.status_code == 200:
             self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(pagarme_response.content)
+            self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
             
     def find_all(self):
         url = self.BASE_URL + '/'      
@@ -68,5 +68,5 @@ class Recipient(AbstractResource):
             list_banks = json.loads(pagarme_response.content.decode(encoding='UTF-8'))
             return list_banks
         else:
-            self.error(pagarme_response.content)        
+            self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))       
                 

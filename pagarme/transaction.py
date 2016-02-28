@@ -43,20 +43,22 @@ class Transaction(AbstractResource):
             self.data[key] = value
 
     def error(self, response):
-        print(response)
-        data = json.loads(response)
-        e = data['errors'][0]
+        e = response['errors'][0]
         error_string = e['type'] + ' - ' + e['message']
-        raise PagarmeApiError(error_string)
+        self.error = error_string
+        try:
+            raise PagarmeApiError(error_string)
+        except:
+            pass
 
     def charge(self):
-        post_data = self.get_data()
+        post_data = self.get_data()        
         url = self.BASE_URL
         pagarme_response = requests.post(url, data=post_data)
         if pagarme_response.status_code == 200:
             self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(pagarme_response.content)
+            self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
 
     def handle_response(self, data):
         self.id = data['id']
@@ -75,6 +77,7 @@ class Transaction(AbstractResource):
             self.amount = _amount
             
         url = self.BASE_URL + '/' + str(self.id) + '/capture'
+        print(url)
         if _amount:
             data = {'api_key': self.api_key, 'amount': self.amount}
         else:

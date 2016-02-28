@@ -13,10 +13,13 @@ class AbstractResource(object):
         self.data.update(data)
 
     def error(self, response):
-        data = json.loads(response)
-        e = data['errors'][0]
+        e = response['errors'][0]
         error_string = e['type'] + ' - ' + e['message']
-        raise PagarmeApiError(error_string)
+        self.error = error_string
+        try:
+            raise PagarmeApiError(error_string)
+        except:
+            pass
 
     def create(self):
         url = self.BASE_URL
@@ -24,7 +27,7 @@ class AbstractResource(object):
         if pagarme_response.status_code == 200:
             self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(pagarme_response.content)
+            self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
 
     def get_data(self):
         return self.data

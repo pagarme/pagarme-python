@@ -46,10 +46,13 @@ class Pagarme(object):
             **kwargs)
 
     def error(self, response):
-        data = json.loads(response)
-        e = data['errors'][0]
+        e = response['errors'][0]
         error_string = e['type'] + ' - ' + e['message']
-        raise PagarmeApiError(error_string)
+        self.error = error_string
+        try:
+            raise PagarmeApiError(error_string)
+        except:
+            pass
 
     def find_transaction_by_id(self, id):
         transaction = Transaction(api_key=self.api_key)
@@ -136,7 +139,7 @@ class Pagarme(object):
         url = Class.BASE_URL
         pagarme_response = requests.get(url, params=data)
         if pagarme_response.status_code != 200:
-            self.error(pagarme_response.content)            
+            self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         responses = json.loads(pagarme_response.content.decode(encoding='UTF-8'))
         resources = []
         for response in responses:

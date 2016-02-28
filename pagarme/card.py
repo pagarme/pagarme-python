@@ -50,4 +50,4 @@ class Card(AbstractResource):
         if pagarme_response.status_code == 200:
             self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(pagarme_response.content)
+            self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
