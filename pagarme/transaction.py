@@ -49,7 +49,7 @@ class Transaction(AbstractResource):
             error_string = e['type'] + ' - ' + e['message']
             raise PagarmeApiError(error_string)
         except:
-            e = data['errors'][0]
+            e = response['errors'][0]
             self.error = e['type'] + ' - ' + e['message']
 
     def charge(self):

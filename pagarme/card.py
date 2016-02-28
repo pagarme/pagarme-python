@@ -13,7 +13,7 @@ class Card(AbstractResource):
     def __init__(
             self,
             api_key=None,
-            id=None,
+            _id=None,
             card_number=None,
             expiration_date=None,
             card_expiration_date=None,
@@ -31,7 +31,7 @@ class Card(AbstractResource):
             self.data = {'card_hash': card_hash}
 
         if id is not None:
-            self.data['id'] = id
+            self.data['id'] = _id
         self.data['api_key'] = api_key
 
     def get_data(self):
@@ -41,13 +41,19 @@ class Card(AbstractResource):
     def id(self):
         return self.data.get('id', '')
 
-    def find_by_id(self, id=None):
-        if id is None and not self.data.get('id', False):
+    def find_by_id(self, _id=None):
+        if _id is None and not self.data.get('id', False):
             raise ValueError('Cant find card id')
-        card_id = id if id else self.data['id']
+        card_id = _id if _id else self.data['id']
         url = self.BASE_URL + '/' + str(card_id)
         pagarme_response = requests.get(url, params={'api_key': self.data['api_key']})
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
+            try:
+                self.handle_response(json.loads(pagarme_response.content))
+            except:
+                self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
+            try:
+                self.error(pagarme_response.content)
+            except:
+                self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))

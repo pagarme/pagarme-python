@@ -12,7 +12,7 @@ class BankAccount(AbstractResource):
     def __init__(
             self,
             api_key=None,
-            id=None,
+            _id=None,
             count=None,
             page=None,
             bank_code=None,
@@ -28,7 +28,7 @@ class BankAccount(AbstractResource):
 
         if bank_code and agencia and conta:
             self.data = {
-                'id': id,
+                'id': _id,
                 'bank_code': bank_code,
                 'agencia': agencia,
                 'agencia_dv': agencia_dv,
@@ -42,8 +42,8 @@ class BankAccount(AbstractResource):
             }
         else:
             self.data = {}
-            if id:
-                self.data['id'] = id
+            if _id:
+                self.data['id'] = _id
             else:
                 if count:
                     self.data['count'] = count
@@ -53,7 +53,7 @@ class BankAccount(AbstractResource):
 
 
     def handle_response(self, data):
-        self.id = data['id']
+        self._id = data['id']
         self.bank_code = data['bank_code']
         self.agencia = data['agencia']
         self.agencia_dv = data['agencia_dv']
@@ -73,16 +73,29 @@ class BankAccount(AbstractResource):
         url = self.BASE_URL + '/' + str(bank_id)   
         pagarme_response = requests.get(url, params={'api_key': self.data['api_key']})
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
+            try:
+                self.handle_response(json.loads(pagarme_response.content))
+            except:
+                self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
+            try:
+                self.error(pagarme_response.content)
+            except:
+                self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
             
     def find_all(self):
         url = self.BASE_URL + '/'      
         pagarme_response = requests.get(url, params={'api_key': self.data['api_key']})
             
         if pagarme_response.status_code == 200:
-            list_banks = json.loads(pagarme_response.content.decode(encoding='UTF-8'))
+            try:
+                list_banks = json.loads(pagarme_response.content)
+            except:
+                list_banks = json.loads(pagarme_response.content.decode(encoding='UTF-8')) 
+            
             return list_banks
         else:
-            self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8'))) 
+            try:
+                self.error(pagarme_response.content)
+            except:
+                self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))

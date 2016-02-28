@@ -46,17 +46,18 @@ class Pagarme(object):
             **kwargs)
 
     def error(self, response):
-        e = response['errors'][0]
-        error_string = e['type'] + ' - ' + e['message']
-        self.error = error_string
         try:
+            data = json.loads(response)
+            e = data['errors'][0]
+            error_string = e['type'] + ' - ' + e['message']
             raise PagarmeApiError(error_string)
         except:
-            pass
+            e = response['errors'][0]
+            self.error = e['type'] + ' - ' + e['message']
 
-    def find_transaction_by_id(self, id):
+    def find_transaction_by_id(self, _id):
         transaction = Transaction(api_key=self.api_key)
-        transaction.find_by_id(id)
+        transaction.find_by_id(_id)
         return transaction
 
     def all_transactions(self, page=1, count=10):
@@ -99,9 +100,9 @@ class Pagarme(object):
 
         return plan
 
-    def find_plan_by_id(self, id):
+    def find_plan_by_id(self, _id):
         plan = Plan(self.api_key)
-        plan.find_by_id(id)
+        plan.find_by_id(_id)
         return plan
 
     def all_plans(self, page=1, count=10):
@@ -122,9 +123,9 @@ class Pagarme(object):
         sub = Subscription(api_key=self.api_key, plan_id=plan_id, card_id=card_id, card_hash=card_hash, postback_url=postback_url, customer=customer, **kwargs)
         return sub
 
-    def find_subscription_by_id(self, id):
+    def find_subscription_by_id(self, _id):
         s = Subscription(self.api_key)
-        s.find_by_id(id)
+        s.find_by_id(_id)
         return s
 
     def all_subscriptions(self, page=1, count=10):
@@ -139,8 +140,16 @@ class Pagarme(object):
         url = Class.BASE_URL
         pagarme_response = requests.get(url, params=data)
         if pagarme_response.status_code != 200:
-            self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
-        responses = json.loads(pagarme_response.content.decode(encoding='UTF-8'))
+            try:
+                self.error(pagarme_response.content)
+            except:
+                self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8'))) 
+        
+        try:            
+            responses = json.loads(pagarme_response.content)
+        except:
+            responses = json.loads(pagarme_response.content.decode(encoding='UTF-8'))
+        
         resources = []
         for response in responses:
             resource = Class(api_key=self.api_key)
@@ -148,7 +157,7 @@ class Pagarme(object):
             resources.append(resource)
         return resources
 
-    def find_card_by_id(self, id=None):
+    def find_card_by_id(self, _id=None):
         card = Card(self.api_key)
-        card.find_by_id(id)
+        card.find_by_id(_id)
         return card
