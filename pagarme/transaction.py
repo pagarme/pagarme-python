@@ -43,22 +43,29 @@ class Transaction(AbstractResource):
             self.data[key] = value
 
     def error(self, response):
-        e = response['errors'][0]
-        error_string = e['type'] + ' - ' + e['message']
-        self.error = error_string
         try:
+            data = json.loads(response)
+            e = data['errors'][0]
+            error_string = e['type'] + ' - ' + e['message']
             raise PagarmeApiError(error_string)
         except:
-            pass
+            e = data['errors'][0]
+            self.error = e['type'] + ' - ' + e['message']
 
     def charge(self):
         post_data = self.get_data()        
         url = self.BASE_URL
         pagarme_response = requests.post(url, data=post_data)
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
+            try:
+                self.handle_response(json.loads(pagarme_response.content))
+            except:
+                self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
+            try:
+                self.error(pagarme_response.content)
+            except:
+                self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
 
     def handle_response(self, data):
         self.id = data['id']
@@ -84,9 +91,15 @@ class Transaction(AbstractResource):
             data = {'api_key': self.api_key}
         pagarme_response = requests.post(url, data=data)
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
+            try:
+                self.handle_response(json.loads(pagarme_response.content))
+            except:
+                self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(pagarme_response.content)
+            try:
+                self.error(pagarme_response.content)
+            except:
+                self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
 
     def get_data(self):
         return self.__dict__()
@@ -120,13 +133,19 @@ class Transaction(AbstractResource):
                 cont=cont+1
         return d
 
-    def find_by_id(self, id=None):
-        url = self.BASE_URL + '/' + str(id)
+    def find_by_id(self, _id=None):
+        url = self.BASE_URL + '/' + str(_id)
         pagarme_response = requests.get(url, data=self.get_data())
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
+            try:
+                self.handle_response(json.loads(pagarme_response.content))
+            except:
+                self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(pagarme_response.content)
+            try:
+                self.error(pagarme_response.content)
+            except:
+                self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
 
     def refund(self):
         if self.id is None:
@@ -135,17 +154,29 @@ class Transaction(AbstractResource):
         url = self.BASE_URL + '/' + str(self.id) + '/refund'
         pagarme_response = requests.post(url, data=self.get_data())
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
+            try:
+                self.handle_response(json.loads(pagarme_response.content))
+            except:
+                self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(pagarme_response.content)
+            try:
+                self.error(pagarme_response.content)
+            except:
+                self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
 
 
-    def find_split_rule(self, id=None):
-        url = self.BASE_URL + '/' + str(id) + '/split_rules'
+    def find_split_rule(self, _id=None):
+        url = self.BASE_URL + '/' + str(_id) + '/split_rules'
         pagarme_response = requests.get(url, data=self.get_data())
         if pagarme_response.status_code == 200:
-            return json.loads(pagarme_response.content.decode(encoding='UTF-8'))
+            try:
+                self.handle_response(json.loads(pagarme_response.content))
+            except:
+                self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(pagarme_response.content)
+            try:
+                self.error(pagarme_response.content)
+            except:
+                self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
             
             
