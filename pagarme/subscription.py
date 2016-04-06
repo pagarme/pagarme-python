@@ -38,10 +38,15 @@ class Plan(AbstractResource):
         data = {'api_key': self.data['api_key']}
         pagarme_response = requests.get(url, params=data)
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            try:
+                self.handle_response(json.loads(pagarme_response.content))
+            except:
+                self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(pagarme_response.content)
-
+            try:
+                self.error(pagarme_response.content)
+            except:
+                self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
 
 class Subscription(AbstractResource):
     BASE_URL = BASE_URL + 'subscriptions'
@@ -88,9 +93,15 @@ class Subscription(AbstractResource):
         data = {'api_key': self.data['api_key']}
         pagarme_response = requests.get(url, params=data)
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            try:
+                self.handle_response(json.loads(pagarme_response.content))
+            except:
+                self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(pagarme_response.content)
+            try:
+                self.error(pagarme_response.content)
+            except:
+                self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
 
     def cancel(self):
         if not self.data.get('id', False):
@@ -98,18 +109,33 @@ class Subscription(AbstractResource):
         url = self.BASE_URL + '/{id}/cancel'.format(id=self.data['id'])
         pagarme_response = requests.post(url, data={'api_key': self.data['api_key']})
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            try:
+                self.handle_response(json.loads(pagarme_response.content))
+            except:
+                self.handle_response(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
         else:
-            self.error(pagarme_response.content)
+            try:
+                self.error(pagarme_response.content)
+            except:
+                self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
 
     def transactions(self):
         if not self.data.get('id', False):
             raise NotBoundException('First try search your subscription')
         url = self.BASE_URL + '/{id}/transactions'.format(id=self.data['id'])
         pagarme_response = requests.get(url, params={'api_key': self.data['api_key']})
+        
         if pagarme_response.status_code != 200:
-            self.error(pagarme_response.content)
-        response = json.loads(pagarme_response.content)
+            try:
+                self.error(pagarme_response.content)
+            except:
+                self.error(json.loads(pagarme_response.content.decode(encoding='UTF-8')))
+
+        try:              
+            response = json.loads(pagarme_response.content)
+        except:
+            response = json.loads(pagarme_response.content.decode(encoding='UTF-8'))
+        
         transactions = []
         for transaction in response:
             t = Transaction(self.data['api_key'])

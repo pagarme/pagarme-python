@@ -302,3 +302,115 @@ def fake_card_error(*args, **kwargs):
     """
     fake.status_code = 404
     return fake
+
+
+def fake_bank_accounts_get(*args, **kwargs):
+    fake = FakeResponse()
+    fake.content = """
+    {
+        "object": "bank_account",
+        "id": 4840,
+        "bank_code": "341",
+        "agencia": "0932",
+        "agencia_dv": "5",
+        "conta": "58054",
+        "conta_dv": "1",
+        "document_type": "cpf",
+        "document_number": "26268738888",
+        "legal_name": "API BANK ACCOUNT",
+        "charge_transfer_fees": false,
+        "date_created": "2015-03-19T15:35:40.000Z"
+    }
+    """
+    return fake
+
+def fake_create_recipient(*args, **kwargs):
+    fake = FakeResponse()
+    fake.content = """
+    {
+        "object": "recipient",
+        "id": "re_ci9bucss300h1zt6dvywufeqc",
+        "bank_account": {
+            "object": "bank_account",
+            "id": 4841,
+            "bank_code": "341",
+            "agencia": "0932",
+            "agencia_dv": "5",
+            "conta": "58054",
+            "conta_dv": "1",
+            "document_type": "cpf",
+            "document_number": "26268738888",
+            "legal_name": "API BANK ACCOUNT",
+            "charge_transfer_fees": false,
+            "date_created": "2015-03-19T15:40:51.000Z"
+        },
+        "transfer_enabled": true,
+        "last_transfer": null,
+        "transfer_interval": "weekly",
+        "transfer_day": 5,
+        "automatic_anticipation_enabled": true,
+        "anticipatable_volume_percentage": 85,
+        "date_created": "2015-05-05T21:41:48.000Z",
+        "date_updated": "2015-05-05T21:41:48.000Z"
+    }
+    """
+    return fake
+
+def fake_recipient_get_by_id(*args, **kwargs):
+    fake = FakeResponse()
+    fake.content = """
+    {
+        "object": "recipient",
+        "id": "re_ci7nhf1ay0007n016wd5t22nl",
+        "bank_account": {
+            "object": "bank_account",
+            "id": 4901,
+            "bank_code": "341",
+            "agencia": "0932",
+            "agencia_dv": null,
+            "conta": "58999",
+            "conta_dv": "3",
+            "document_type": "cpf",
+            "document_number": "26268738888",
+            "legal_name": "RECIPIENT TEST",
+            "charge_transfer_fees": true,
+            "date_created": "2015-03-24T15:53:17.000Z"
+        },
+        "transfer_enabled": true,
+        "last_transfer": null,
+        "transfer_interval": "weekly",
+        "transfer_day": 5,
+        "date_created": "2015-03-24T15:53:27.000Z",
+        "date_updated": "2015-03-24T15:53:27.000Z"
+    }
+    """
+    return fake
+
+
+
+def fake_find_split_rule(*args, **kwargs):
+    fake = FakeResponse()
+    fake.content = """
+    [{
+        "object": "split_rule",
+        "id": "sr_ci7ntawl1001s2m164zrbp7tz",
+        "recipient_id": "re_ci7nhf1ay0007n016wd5t22nl",
+        "charge_processing_fee": true,
+        "liable": true,
+        "percentage": 30,
+        "amount": null,
+        "date_created": "2015-03-24T21:26:09.000Z",
+        "date_updated": "2015-03-24T21:26:09.000Z"
+    }, {
+        "object": "split_rule",
+        "id": "sr_ci7ntawl1001t2m1606u3e0uw",
+        "recipient_id": "re_ci7nheu0m0006n016o5sglg9t",
+        "charge_processing_fee": true,
+        "liable": false,
+        "percentage": 70,
+        "amount": null,
+        "date_created": "2015-03-24T21:26:09.000Z",
+        "date_updated": "2015-03-24T21:26:09.000Z"
+    }]
+    """
+    return fake

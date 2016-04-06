@@ -7,7 +7,8 @@ from pagarme.transaction import Transaction, PagarmeApiError, NotPaidException, 
 
 from .mocks import fake_request, fake_request_fail, fake_request_refund
 from .pagarme_test import PagarmeTestCase
-
+from pagarme.split_rules import SplitRules
+from tests.mocks import fake_find_split_rule
 
 class TransactionTestCase(PagarmeTestCase):
 
@@ -125,3 +126,53 @@ class TransactionTestCase(PagarmeTestCase):
             customer = customer
         )
         self.assertIn('customer[phone][ddd]', transaction.get_data())
+        
+    @mock.patch('requests.post', mock.Mock(side_effect=fake_request))
+    def test_create_transaction_with_split_rules(self):
+        
+        # Create object split_rules in transaction
+        list_split = []
+        split_rules = SplitRules(
+            recipient_id='re_cihuw6sey005ptq6di0ov6lep',
+            charge_processing_fee='true',
+            liable='true',
+            percentage='70'
+        )
+        list_split.append(split_rules)
+         
+        split_rules = SplitRules(
+            recipient_id='re_cihuw7xc6004t426er5llvqds',
+            charge_processing_fee='true',
+            liable='true',
+            percentage='30'
+        )
+        list_split.append(split_rules)        
+        
+        customer = Customer(
+            name='foo bar',
+            document_number='11122233345',
+            email='teste@email.com.br',
+            address_street='bar foo',
+            address_neighborhood='baz for',
+            address_zipcode='3945154',
+            address_street_number='99',
+            phone_ddd='31',
+            phone_number='9144587'
+        )
+
+        transaction = Transaction(
+            api_key='apikey',
+            amount=314,
+            card_hash='cardhash',
+            customer = customer,
+            split_rules = list_split,
+        )
+        self.assertIn('customer[phone][ddd]', transaction.get_data())
+        
+    @mock.patch('requests.get', mock.Mock(side_effect=fake_find_split_rule))
+    def test_get_split_rules_by_id_transaction(self):
+        transaction = Transaction(api_key='apikey')
+        transaction.find_split_rule(0000)
+        self.assertEqual(314, transaction.id)
+        
+        
