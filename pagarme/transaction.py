@@ -22,6 +22,7 @@ class Transaction(AbstractResource):
             metadata={},
             soft_descriptor='',
             customer=None,
+            split_rules=None,
             **kwargs):
 
         self.amount = amount
@@ -36,6 +37,7 @@ class Transaction(AbstractResource):
         self.id = None
         self.data = {}
         self.customer = customer
+        self.split_rules = split_rules
 
         for key, value in kwargs.items():
             self.data[key] = value
@@ -98,6 +100,12 @@ class Transaction(AbstractResource):
 
         if self.customer:
             d.update(self.customer.get_anti_fraud_data())
+
+        if self.split_rules:
+            for idx, splitRule in enumerate(self.split_rules):
+                for key, value in splitRule.items():
+                    new_key = 'split_rules[{idx}][{key}]'.format(key=key,idx=idx)
+                    d[new_key] = value   
 
         return d
 
