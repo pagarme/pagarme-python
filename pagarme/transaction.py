@@ -3,7 +3,12 @@
 import json
 import requests
 
-from .exceptions import PagarmeApiError, NotPaidException, NotBoundException
+from .exceptions import (
+    PagarmeApiError,
+    NotPaidException,
+    NotBoundException,
+    NotAmountException
+)
 from .resource import AbstractResource
 
 
@@ -67,7 +72,7 @@ class Transaction(AbstractResource):
         if self.id is None:
             raise NotBoundException('First try search your transaction')
         if self.amount is None:
-            raise NotBoundException('First add value to variable amount')
+            raise NotAmountException('First add value to variable amount')
         url = self.BASE_URL + '/' + str(self.id) + '/capture'
         params = {
             'api_key': self.api_key,
