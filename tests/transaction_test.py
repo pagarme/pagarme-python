@@ -99,7 +99,7 @@ class TransactionTestCase(PagarmeTestCase):
     @mock.patch('requests.get', mock.Mock(side_effect=fake_request))
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_fail))
     def test_transaction_caputre_later_fails(self):
-        transaction = Transaction(api_key='apikey')
+        transaction = Transaction(api_key='apikey', amount=314)
         transaction.find_by_id(314)
         with self.assertRaises(PagarmeApiError):
             transaction.capture()
