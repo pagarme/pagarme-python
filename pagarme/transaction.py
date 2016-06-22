@@ -74,11 +74,12 @@ class Transaction(AbstractResource):
         if self.amount is None:
             raise NotAmountException('First add value to variable amount')
         url = self.BASE_URL + '/' + str(self.id) + '/capture'
-        params = {
+        data = {
             'api_key': self.api_key,
-            'amount': self.amount
+            'amount': self.amount,
+            'metadata': self.metadata
         }
-        pagarme_response = requests.post(url, params=params)
+        pagarme_response = requests.post(url, data=data)
         if pagarme_response.status_code == 200:
             self.handle_response(json.loads(pagarme_response.content))
         else:

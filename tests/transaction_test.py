@@ -118,6 +118,16 @@ class TransactionTestCase(PagarmeTestCase):
         with self.assertRaises(NotAmountException):
             transaction.capture()
 
+    @mock.patch('requests.post', mock.Mock(side_effect=fake_request_fail))
+    def test_transaction_capture_later_with_metadata(self):
+        transaction = Transaction(
+            api_key='apikey',
+            amount=314,
+            metadata={'sku': 'foo bar'}
+        )
+        transaction.find_by_id(314)
+        transaction.capture()
+
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request))
     def test_transaction_with_ant_fraud(self):
         customer = Customer(
