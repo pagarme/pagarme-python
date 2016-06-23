@@ -3,7 +3,13 @@
 import mock
 
 from pagarme import Customer
-from pagarme.transaction import Transaction, PagarmeApiError, NotPaidException, NotBoundException
+from pagarme.transaction import (
+    Transaction,
+    PagarmeApiError,
+    NotPaidException,
+    NotBoundException,
+    NotAmountException
+)
 
 from .mocks import fake_request, fake_request_fail, fake_request_refund
 from .pagarme_test import PagarmeTestCase
@@ -75,7 +81,7 @@ class TransactionTestCase(PagarmeTestCase):
         self.assertIn('any_argument', transaction.get_data())
 
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request))
-    def test_transaction_caputre_later(self):
+    def test_transaction_capture_later(self):
         transaction = Transaction(
             api_key='apikey',
             amount=314,
@@ -86,7 +92,7 @@ class TransactionTestCase(PagarmeTestCase):
         transaction.capture()
 
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_fail))
-    def test_transaction_caputre_later_wihtout_charger(self):
+    def test_transaction_capture_later_wihtout_charger(self):
         transaction = Transaction(
             api_key='apikey',
             amount=314,
@@ -98,11 +104,30 @@ class TransactionTestCase(PagarmeTestCase):
 
     @mock.patch('requests.get', mock.Mock(side_effect=fake_request))
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request_fail))
-    def test_transaction_caputre_later_fails(self):
-        transaction = Transaction(api_key='apikey')
+    def test_transaction_capture_later_fails(self):
+        transaction = Transaction(api_key='apikey', amount=314)
         transaction.find_by_id(314)
         with self.assertRaises(PagarmeApiError):
             transaction.capture()
+
+    @mock.patch('requests.get', mock.Mock(side_effect=fake_request))
+    @mock.patch('requests.post', mock.Mock(side_effect=fake_request_fail))
+    def test_transaction_capture_later_amount_fails(self):
+        transaction = Transaction(api_key='apikey')
+        transaction.find_by_id(314)
+        with self.assertRaises(NotAmountException):
+            transaction.capture()
+
+    @mock.patch('requests.post', mock.Mock(side_effect=fake_request))
+    def test_transaction_capture_later_metadata(self):
+        transaction = Transaction(
+            api_key='apikey',
+            amount=314,
+            card_hash='cardhash',
+            capture=False,
+        )
+        transaction.charge()
+        transaction.capture()
 
     @mock.patch('requests.post', mock.Mock(side_effect=fake_request))
     def test_transaction_with_ant_fraud(self):

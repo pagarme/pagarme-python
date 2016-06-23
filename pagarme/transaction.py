@@ -3,7 +3,12 @@
 import json
 import requests
 
-from .exceptions import PagarmeApiError, NotPaidException, NotBoundException
+from .exceptions import (
+    PagarmeApiError,
+    NotPaidException,
+    NotBoundException,
+    NotAmountException
+)
 from .resource import AbstractResource
 
 
@@ -66,8 +71,14 @@ class Transaction(AbstractResource):
     def capture(self):
         if self.id is None:
             raise NotBoundException('First try search your transaction')
+        if self.amount is None:
+            raise NotAmountException('First add value to variable amount')
         url = self.BASE_URL + '/' + str(self.id) + '/capture'
-        data = {'api_key': self.api_key}
+        data = {
+            'api_key': self.api_key,
+            'amount': self.amount,
+            'metadata': self.metadata
+        }
         pagarme_response = requests.post(url, data=data)
         if pagarme_response.status_code == 200:
             self.handle_response(json.loads(pagarme_response.content))
