@@ -1,7 +1,5 @@
 # encoding: utf-8
-
 import hashlib
-import json
 import requests
 
 from .card import Card
@@ -45,8 +43,7 @@ class Pagarme(object):
             postback_url=postback_url,
             **kwargs)
 
-    def error(self, response):
-        data = json.loads(response)
+    def error(self, data):
         e = data['errors'][0]
         error_string = e['type'] + ' - ' + e['message']
         raise PagarmeApiError(error_string)
@@ -116,7 +113,10 @@ class Pagarme(object):
 
         if plan_id is None:
             plan_id = plan.data['id']
-        sub = Subscription(api_key=self.api_key, plan_id=plan_id, card_id=card_id, card_hash=card_hash, postback_url=postback_url, customer=customer, **kwargs)
+        sub = Subscription(
+            api_key=self.api_key, plan_id=plan_id, card_id=card_id,
+            card_hash=card_hash, postback_url=postback_url, customer=customer,
+            **kwargs)
         return sub
 
     def find_subscription_by_id(self, id):
@@ -136,8 +136,8 @@ class Pagarme(object):
         url = Class.BASE_URL
         pagarme_response = requests.get(url, params=data)
         if pagarme_response.status_code != 200:
-            self.error(pagarme_response.content)
-        responses = json.loads(pagarme_response.content)
+            self.error(pagarme_response.json())
+        responses = pagarme_response.json()
         resources = []
         for response in responses:
             resource = Class(api_key=self.api_key)
