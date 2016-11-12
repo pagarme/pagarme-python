@@ -46,8 +46,9 @@ class Card(AbstractResource):
             raise ValueError('Cant find card id')
         card_id = id if id else self.data['id']
         url = self.BASE_URL + '/' + str(card_id)
-        pagarme_response = requests.get(url, params={'api_key': self.data['api_key']})
+        pagarme_response = requests.get(
+            url, params={'api_key': self.data['api_key']})
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            self.handle_response(pagarme_response.json())
         else:
-            self.error(pagarme_response.content)
+            self.error(pagarme_response.json())

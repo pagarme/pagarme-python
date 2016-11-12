@@ -66,9 +66,9 @@ class Transaction(AbstractResource):
         data = {'api_key': self.api_key}
         pagarme_response = requests.post(url, data=data)
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            self.handle_response(json.loads(pagarme_response.json()))
         else:
-            self.error(pagarme_response.content)
+            self.error(pagarme_response.json())
 
     def get_data(self):
         return self.__dict__()
@@ -98,8 +98,8 @@ class Transaction(AbstractResource):
         if self.split_rules:
             for idx, split_rule in enumerate(self.split_rules):
                 for key, value in split_rule.items():
-                    new_key = 'split_rules[{idx}][{key}]'.format(key=key,idx=idx)
-                    d[new_key] = value     
+                    new_key = 'split_rules[{idx}][{key}]'.format(key=key, idx=idx)
+                    d[new_key] = value
 
         return d
 
@@ -107,9 +107,9 @@ class Transaction(AbstractResource):
         url = self.BASE_URL + '/' + str(id)
         pagarme_response = requests.get(url, data=self.get_data())
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            self.handle_response(pagarme_response.json())
         else:
-            self.error(pagarme_response.content)
+            self.error(pagarme_response.json())
 
     def refund(self):
         if self.id is None:
@@ -118,6 +118,6 @@ class Transaction(AbstractResource):
         url = self.BASE_URL + '/' + str(self.id) + '/refund'
         pagarme_response = requests.post(url, data=self.get_data())
         if pagarme_response.status_code == 200:
-            self.handle_response(json.loads(pagarme_response.content))
+            self.handle_response(pagarme_response.json())
         else:
-            self.error(pagarme_response.content)
+            self.error(pagarme_response.json())
