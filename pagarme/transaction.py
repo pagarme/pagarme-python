@@ -62,6 +62,8 @@ class Transaction(AbstractResource):
             raise NotBoundException('First try search your transaction')
         url = self.BASE_URL + '/' + str(self.id) + '/capture'
         data = {'api_key': self.api_key}
+        if(self.amount):
+            data['amount'] = self.amount
         pagarme_response = requests.post(url, data=data)
         if pagarme_response.status_code == 200:
             self.handle_response(pagarme_response.json())
