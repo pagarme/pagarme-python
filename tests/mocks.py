@@ -75,6 +75,97 @@ def fake_request_fail(*args, **kwargs):
     fake.status_code = 400
     return fake
 
+def fake_request_partial_capture(*args, **kwargs):
+    fake = FakeResponse()
+    fake.content = """
+        {
+              "object": "transaction",
+              "status": "paid",
+              "refuse_reason": null,
+              "status_reason": "acquirer",
+              "acquirer_response_code": "0000",
+              "acquirer_name": "pagarme",
+              "acquirer_id": "56f9d019decf72cc70055d58",
+              "authorization_code": "402918",
+              "soft_descriptor": null,
+              "tid": 1122193,
+              "nsu": 1122193,
+              "date_created": "2017-01-19T17:24:48.909Z",
+              "date_updated": "2017-01-19T17:25:20.453Z",
+              "amount": 10000,
+              "authorized_amount": 10000,
+              "paid_amount": 5000,
+              "refunded_amount": 0,
+              "installments": 1,
+              "id": 1122193,
+              "cost": 50,
+              "card_holder_name": "Alex Silva",
+              "card_last_digits": "4242",
+              "card_first_digits": "424242",
+              "card_brand": "visa",
+              "card_pin_mode": null,
+              "postback_url": "http://requestb.in/14i32g71",
+              "payment_method": "credit_card",
+              "capture_method": "ecommerce",
+              "antifraud_score": null,
+              "boleto_url": null,
+              "boleto_barcode": null,
+              "boleto_expiration_date": null,
+              "referer": "api_key",
+              "ip": "187.11.121.49",
+              "subscription_id": null,
+              "phone": {
+                "object": "phone",
+                "ddi": "55",
+                "ddd": "11",
+                "number": "99999999",
+                "id": 78641
+              },
+              "address": {
+                "object": "address",
+                "street": "Avenida Brigadeiro Faria Lima",
+                "complementary": null,
+                "street_number": "1811",
+                "neighborhood": "Jardim Paulistano",
+                "city": "São Paulo",
+                "state": "SP",
+                "zipcode": "01451001",
+                "country": "Brasil",
+                "id": 81006
+              },
+              "customer": {
+                "object": "customer",
+                "document_number": "18152564000105",
+                "document_type": "cnpj",
+                "name": "John Smith",
+                "email": "aardvark.silva@pagar.me",
+                "born_at": "1970-01-01T03:38:41.988Z",
+                "gender": "M",
+                "date_created": "2016-08-05T19:09:27.251Z",
+                "id": 85789
+              },
+              "card": {
+                "object": "card",
+                "id": "card_ciy33symx0005ky6eoa2k16rh",
+                "date_created": "2017-01-18T15:29:01.788Z",
+                "date_updated": "2017-01-18T15:29:02.432Z",
+                "brand": "visa",
+                "holder_name": "Alex Silva",
+                "first_digits": "424242",
+                "last_digits": "4242",
+                "country": "US",
+                "fingerprint": "8Z6Lxj449c8M",
+                "valid": true,
+                "expiration_date": "1119"
+              },
+              "split_rules": null,
+              "metadata": {},
+              "antifraud_metadata": {}
+            }
+            """
+    return fake
+
+
 def fake_request_refund(*args, **kwargs):
     fake = FakeResponse()
     fake.content = """
