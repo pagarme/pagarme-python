@@ -43,6 +43,15 @@ class TransactionTestCase(PagarmeTestCase):
         transaction.refund()
         self.assertEqual('refunded', transaction.status)
 
+    @mock.patch('request.get',mock.Mock(side_effect=fake_request))
+	@mock.patch('request.post', mock.Mock(side_effect=fake_request_partial_capture))
+	def test_partial_capture(self):
+		transaction = Transaction(api_key='apikey')
+		transaction.find_by_id(314)
+		transaction.amount = 5000
+		transaction.capture()
+		self.assertEqual(5000, transaction.paid_amount)        
+
     def test_refund_transaction_before_set_id(self):
         transaction = Transaction(api_key='apikey')
         with self.assertRaises(NotPaidException):
