@@ -13,6 +13,7 @@ class Transaction(AbstractResource):
             self,
             api_key=None,
             amount=None,
+            paid_amount=None,
             card_hash=None,
             card_id=None,
             payment_method='credit_card',
@@ -25,6 +26,7 @@ class Transaction(AbstractResource):
             **kwargs):
 
         self.amount = amount
+        self.paid_amount = paid_amount
         self.api_key = api_key
         self.card_hash = card_hash
         self.card_id = card_id
@@ -51,6 +53,7 @@ class Transaction(AbstractResource):
 
     def handle_response(self, data):
         self.id = data['id']
+        self.paid_amount = data['paid_amount']
         self.status = data['status']
         self.card = data['card']
         self.postback_url = data['postback_url']
@@ -76,6 +79,7 @@ class Transaction(AbstractResource):
         d['api_key'] = self.api_key
         if self.amount:
             d['amount'] = self.amount
+            d['paid_amount'] = self.paid_amount
             d['card_hash'] = self.card_hash
             d['card_id'] = self.card_id
             d['installments'] = self.installments

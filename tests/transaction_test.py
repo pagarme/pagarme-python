@@ -5,7 +5,7 @@ import mock
 from pagarme import Customer
 from pagarme.transaction import Transaction, PagarmeApiError, NotPaidException, NotBoundException
 
-from .mocks import fake_request, fake_request_fail, fake_request_refund
+from .mocks import fake_request, fake_request_fail, fake_request_refund, fake_request_partial_capture
 from .pagarme_test import PagarmeTestCase
 
 
@@ -43,14 +43,15 @@ class TransactionTestCase(PagarmeTestCase):
         transaction.refund()
         self.assertEqual('refunded', transaction.status)
 
-    @mock.patch('request.get',mock.Mock(side_effect=fake_request))
-	@mock.patch('request.post', mock.Mock(side_effect=fake_request_partial_capture))
-	def test_partial_capture(self):
-		transaction = Transaction(api_key='apikey')
-		transaction.find_by_id(314)
-		transaction.amount = 5000
-		transaction.capture()
-		self.assertEqual(5000, transaction.paid_amount)        
+    @mock.patch('requests.get', mock.Mock(side_effect=fake_request))
+    @mock.patch('requests.post', mock.Mock(side_effect=fake_request_partial_capture))
+    def test_partial_capture(self):
+        transaction = Transaction(api_key='apikey')
+        transaction.find_by_id(1122193)
+        transaction.amount = 5000
+        transaction.capture()
+        self.assertEqual(5000,transaction.paid_amount)
+                
 
     def test_refund_transaction_before_set_id(self):
         transaction = Transaction(api_key='apikey')
