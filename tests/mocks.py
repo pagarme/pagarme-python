@@ -39,7 +39,7 @@ class FakeResponse(object):
             "boleto_barcode": null,
             "boleto_expiration_date": null,
             "referer": "api_key",
-            "ip": "187.11.121.49",
+            "ip": "189.8.94.42",
             "subscription_id": null,
             "phone": {
                 "object": "phone",
@@ -243,7 +243,7 @@ def fake_request_refund(*args, **kwargs):
             "boleto_barcode": null,
             "boleto_expiration_date": null,
             "referer": "api_key",
-            "ip": "187.11.121.49",
+            "ip": "189.8.94.42",
             "subscription_id": null,
             "phone": {
                 "object": "phone",
