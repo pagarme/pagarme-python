@@ -18,8 +18,8 @@ class BankAccount(AbstractResource):
         conta_dv=None,
         type=['conta_corrente','conta_poupanca','conta_corrente_conjunta','conta_poupanca_conjunta'],
         document_number=None,
-        legal_name=None,
-        **kwargs):
+        legal_name=None
+        ):
 
         self.api_key = api_key
         self.bank_code = bank_code
@@ -32,9 +32,6 @@ class BankAccount(AbstractResource):
         self.legal_name = legal_name
         self.id = None
         self.data = {}
-
-        for key, value in kwargs.items():
-            self.data[key] = value
 
     def handle_response(self, data):
         self.id = data['id']
@@ -75,65 +72,9 @@ class BankAccount(AbstractResource):
         else:
             self.error(pagarme_response.json())
 
-    def find_by_bank_code(self, bank_code=None):
-        url = self.BASE_URL + '/' + str(bank_code)
-        pagarme_response = requests.get(url, data=self.get_data())
-        if pagarme_response.status_code == 200:
-            self.handle_response(pagarme_response.json())
-        else:
-            self.error(pagarme_response.json())
-
-    def find_by_agencia(self, agencia=None):
-        url = self.BASE_URL + '/' + str(agencia)
-        pagarme_response = requests.get(url, data=self.get_data())
-        if pagarme_response.status_code == 200:
-            self.handle_response(pagarme_response.json())
-        else:
-            self.error(pagarme_response.json())
-
-    def find_by_agencia_dv(self, agencia_dv=None):
-        url = self.BASE_URL + '/' + str(agencia_dv)
-        pagarme_response = requests.get(url, data=self.get_data())
-        if pagarme_response.status_code == 200:
-            self.handle_response(pagarme_response.json())
-        else:
-            self.error(pagarme_response.json())
-
-    def find_by_conta(self, conta=None):
-        url = self.BASE_URL + '/' + str(conta)
-        pagarme_response = requests.get(url, data=self.get_data())
-        if pagarme_response.status_code == 200:
-            self.handle_response(pagarme_response.json())
-        else:
-            self.error(pagarme_response.json())
-
-    def find_by_conta_dv(self, conta_dv=None):
-        url = self.BASE_URL + '/' + str(conta_dv)
-        pagarme_response = requests.get(url, data=self.get_data())
-        if pagarme_response.status_code == 200:
-            self.handle_response(pagarme_response.json())
-        else:
-            self.error(pagarme_response.json())
-
-    def find_by_type(self, type=None):
-        url = self.BASE_URL + '/' + str(type)
-        pagarme_response = requests.get(url, data=self.get_data())
-        if pagarme_response.status_code == 200:
-            self.handle_response(pagarme_response.json())
-        else:
-            self.error(pagarme_response.json())
-
-    def find_by_document_number(self, document_number=None):
-        url = self.BASE_URL + '/' + str(document_number)
-        pagarme_response = requests.get(url, data=self.get_data())
-        if pagarme_response.status_code == 200:
-            self.handle_response(pagarme_response.json())
-        else:
-            self.error(pagarme_response.json())
-
-    def find_by_legal_name(self, legal_name=None):
-        url = self.BASE_URL + '/' + str(legal_name)
-        pagarme_response = requests.get(url, data=self.get_data())
+    def find_by(self, params=None):
+        url = self.BASE_URL
+        pagarme_response = requests.get(url, data=params)
         if pagarme_response.status_code == 200:
             self.handle_response(pagarme_response.json())
         else:
