@@ -108,7 +108,7 @@ class BankAccountTestCase(PagarmeTestCase):
     @mock.patch('requests.get', mock.Mock(side_effect=fake_request_fail_type))
     def test_get_bankAccount_by_type_fail(self):
         bankAccount = BankAccount(api_key='apikey')
-        params={"type":'conta_poupança'}
+        params={"type":'conta_poupanca'}
         with self.assertRaises(PagarmeApiError):
             bankAccount.find_by(params)
 
