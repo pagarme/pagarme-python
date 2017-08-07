@@ -56,6 +56,5 @@ def delete(end_point, data={}):
 
 
 def error(data):
-    e = data['errors'][0]
-    error_string = e['type'] + ' - ' + e['message']
-    return error_string
+    erros = data['errors']
+    return erros
