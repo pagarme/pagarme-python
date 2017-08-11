@@ -34,30 +34,27 @@ def authentication_key(api_key=None):
 
 def post(end_point, data={}):
     data['api_key'] = KEYS['api_key']
-    pagarme_response = requests.post(end_point, json(data), headers=headers())
+    pagarme_response = requests.post(end_point, data=json.dumps(data), headers=headers())
     return validate_response(pagarme_response)
 
 
 def get(end_point, data={}):
     data['api_key'] = KEYS['api_key']
-    pagarme_response = requests.get(end_point, json(data), headers=headers())
+    pagarme_response = requests.get(end_point, data=json.dumps(data), headers=headers())
     return validate_response(pagarme_response)
 
 
 def put(end_point, data={}):
     data['api_key'] = KEYS['api_key']
-    pagarme_response = requests.put(end_point, json(data), headers=headers())
+    pagarme_response = requests.put(end_point, data=json.dumps(data), headers=headers())
     return validate_response(pagarme_response)
 
 
 def delete(end_point, data={}):
     data['api_key'] = KEYS['api_key']
-    pagarme_response = requests.delete(end_point, json(data), headers=headers())
+    pagarme_response = requests.delete(end_point, data=json.dumps(data), headers=headers())
     return validate_response(pagarme_response)
 
-def json(data):
-    data = json.dumps(data)
-    return data
 
 def headers():
     headers = {'content-type': 'application/json'}
