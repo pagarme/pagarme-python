@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 
-__version__ = '2.1.2'
+__version__ = '3.0.0'
 __description__ = 'Pagar.me Python'
-__long_description__ = 'Python library for the pagar.me gateway'
+__long_description__ = 'Python library for Pagar.me API'
 
-__author__ = 'Allisson Azevedo, Marcus Bodock, Igor P. Leroy'
-__author_email__ = 'allisson@gmail.com, mbodock@gmail.com, ip.leroy@gmail.com'
+__author__ = 'Murilo Henrique, Victor Messina'
+__author_email__ = 'suporte@pagar.me'
+__special_things__ = 'Derek Stavis, Rodrigo Amaral'
 
 requires = [i.strip() for i in open("requirements.txt").readlines()]
 
@@ -24,6 +25,7 @@ setup(
     license='MIT',
     description=__description__,
     long_description=__long_description__,
+    special_things=__special_things__,
     url='https://github.com/pagarme/pagarme-python',
     keywords='Payment, pagarme',
     include_package_data=True,
@@ -35,11 +37,11 @@ setup(
         'Operating System :: OS Independent',
         'Topic :: Software Development',
         'Environment :: Web Environment',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'License :: OSI Approved :: MIT License',
     ],
     tests_require=['pytest'],
