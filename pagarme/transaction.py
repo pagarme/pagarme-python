@@ -1,121 +1,64 @@
 # encoding: utf-8
 
-import requests
-
-from .exceptions import PagarmeApiError, NotPaidException, NotBoundException
-from .resource import AbstractResource
+from pagarme.resources import handler_request
+from pagarme.resources.routes import transaction_routes
 
 
-class Transaction(AbstractResource):
-    BASE_URL = 'https://api.pagar.me/1/transactions'
+def calculate_installments_amount(dictionary):
+    return handler_request.get(transaction_routes.CALCULATE_INSTALLMENTS_AMOUNT, dictionary)
 
-    def __init__(
-            self,
-            api_key=None,
-            amount=None,
-            card_hash=None,
-            card_id=None,
-            payment_method='credit_card',
-            installments=1,
-            postback_url=None,
-            metadata={},
-            soft_descriptor='',
-            customer=None,
-            split_rules=None,
-            **kwargs):
 
-        self.amount = amount
-        self.api_key = api_key
-        self.card_hash = card_hash
-        self.card_id = card_id
-        self.payment_method = payment_method
-        self.installments = installments
-        self.postback_url = postback_url
-        self.metadata = metadata
-        self.soft_descriptor = soft_descriptor[:13]
-        self.id = None
-        self.data = {}
-        self.customer = customer
-        self.split_rules = split_rules
+def capture(transaction_id, dictionary):
+    return handler_request.post(transaction_routes.CAPTURE_TRANSACTION_AFTER.format(transaction_id), dictionary)
 
-        for key, value in kwargs.items():
-            self.data[key] = value
 
-    def error(self, data):
-        e = data['errors'][0]
-        error_string = e['type'] + ' - ' + e['message']
-        raise PagarmeApiError(error_string)
+def create(dictionary):
+    return handler_request.post(transaction_routes.BASE_URL, dictionary)
 
-    def charge(self):
-        self.create()
 
-    def handle_response(self, data):
-        self.id = data['id']
-        self.status = data['status']
-        self.card = data['card']
-        self.postback_url = data['postback_url']
-        self.metadata = data['metadata']
-        self.data = data
+def events(transaction_id):
+    return handler_request.get(transaction_routes.GET_EVENTS_TRANSACTION.format(transaction_id))
 
-    def capture(self):
-        if self.id is None:
-            raise NotBoundException('First try search your transaction')
-        url = self.BASE_URL + '/' + str(self.id) + '/capture'
-        data = {'api_key': self.api_key}
-        pagarme_response = requests.post(url, data=data)
-        if pagarme_response.status_code == 200:
-            self.handle_response(pagarme_response.json())
-        else:
-            self.error(pagarme_response.json())
 
-    def get_data(self):
-        return self.__dict__()
+def find_all():
+    return handler_request.get(transaction_routes.BASE_URL)
 
-    def __dict__(self):
-        d = self.data
-        d['api_key'] = self.api_key
-        if self.amount:
-            d['amount'] = self.amount
-            d['card_hash'] = self.card_hash
-            d['card_id'] = self.card_id
-            d['installments'] = self.installments
-            d['payment_method'] = self.payment_method
-            d['soft_descriptor'] = self.soft_descriptor[:13]
 
-        if self.metadata:
-            for key, value in self.metadata.items():
-                new_key = 'metadata[{key}]'.format(key=key)
-                d[new_key] = value
+def find_by(search_param):
+    return handler_request.get(transaction_routes.GET_TRANSACTION_BY.format(search_param))
 
-        if self.postback_url:
-            d['postback_url'] = self.postback_url
 
-        if self.customer:
-            d.update(self.customer.get_anti_fraud_data())
+def generate_card_hash_key():
+    return handler_request.get(transaction_routes.GENERATE_CARD_HASH_KEY)
 
-        if self.split_rules:
-            for idx, split_rule in enumerate(self.split_rules):
-                for key, value in split_rule.items():
-                    new_key = 'split_rules[{idx}][{key}]'.format(key=key, idx=idx)
-                    d[new_key] = value
 
-        return d
+def operations(transaction_id):
+    return handler_request.get(transaction_routes.GET_TRANSACTION_OPERATION.format(transaction_id))
 
-    def find_by_id(self, id=None):
-        url = self.BASE_URL + '/' + str(id)
-        pagarme_response = requests.get(url, data=self.get_data())
-        if pagarme_response.status_code == 200:
-            self.handle_response(pagarme_response.json())
-        else:
-            self.error(pagarme_response.json())
 
-    def refund(self):
-        if self.id is None:
-            raise NotPaidException('Id not suplied')
+def pay_boleto(transaction_id, dictionary):
+    return handler_request.put(transaction_routes.PAY_BOLETO.format(transaction_id), dictionary)
 
-        url = self.BASE_URL + '/' + str(self.id) + '/refund'
-        pagarme_response = requests.post(url, data=self.get_data())
-        if pagarme_response.status_code == 200:
-            self.handle_response(pagarme_response.json())
-        else:
-            self.error(pagarme_response.json())
+
+# def pay_boleto_notify(dictionary):
+#    return handler_request.post(transaction_routes.PAY_BOLETO_NOTIFY,dictionary)
+
+
+def payables(transaction_id):
+    return handler_request.get(transaction_routes.GET_ALL_PAYABLES_WITH_TRANSACTION_ID.format(transaction_id,))
+
+
+def postbacks(transaction_id):
+    return handler_request.get(transaction_routes.GET_ALL_POSTBACKS.format(transaction_id))
+
+
+def refund(transaction_id, dictionary):
+    return handler_request.post(transaction_routes.REFUND_TRANSACTION.format(transaction_id), dictionary)
+
+
+def specific_payable(transaction_id, payable_id):
+    return handler_request.get(transaction_routes.GET_SPECIFIC_PAYABLE.format(transaction_id, payable_id))
+
+
+def specific_postback(transaction_id, postback_id):
+    return handler_request.get(transaction_routes.GET_SPECIFIC_POSTBACK.format(transaction_id, postback_id))

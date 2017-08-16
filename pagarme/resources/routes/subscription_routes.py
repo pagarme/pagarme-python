@@ -1,0 +1,19 @@
+BASE_URL = 'https://api.pagar.me/1/subscriptions'
+
+GET_SUBSCRIPTION_BY_ID = BASE_URL + '/{0}'
+
+GET_ALL_SUBSCRIPTIONS = BASE_URL
+
+UPDATE_SUBSCRIPTION = BASE_URL + '/{0}'
+
+CANCEL_SUBSCRIPTION = BASE_URL + '/{0}/cancel'
+
+SETTLE_CHARGES_SUBSCRIPTION = BASE_URL + '/{0}/settle_charge'
+
+GET_ALL_SUBSCRIPTIONS_TRANSACTIONS = BASE_URL + '/{0}/transactions'
+
+GET_ALL_SUBSCRIPTIONS_POSTBACKS = BASE_URL + '/{0}/postbacks'
+
+GET_SUBSCRIPTION_POSTBACK_BY_ID = BASE_URL + '/{0}/postbacks/{postback_id}'
+
+REDELIVER_SUBSCRIPTION_POSTBACK_BY_ID = BASE_URL + '/{0}/postbacks/{postback_id}/redeliver'

@@ -1,152 +1,59 @@
-# encoding: utf-8
-
-import mock
-
-from pagarme.customer import Customer
-from pagarme.exceptions import PagarmeApiError
-from pagarme.subscription import Plan, Subscription, NotBoundException
-from pagarme.transaction import Transaction
-
-from .mocks import fake_request_list, fake_create_plan, fake_get_plan, fake_error_plan, fake_get_sub, fake_error_sub
-from .pagarme_test import PagarmeTestCase
+from tests.resources.dictionaries import subscription_dictionary
+from pagarme import subscription
 
 
-class PlanTestCase(PagarmeTestCase):
+def test_create_boleto_subscription():
+    _subscription = subscription.create(subscription_dictionary.BOLETO_SUBSCRIPTION)
+    assert _subscription['payment_method'] == 'boleto'
 
-    @mock.patch('requests.post', mock.Mock(side_effect=fake_create_plan))
-    def test_can_create(self):
-        plan = Plan(api_key='api_key',
-                    name='Test plan',
-                    color='red'
-                )
-        plan.create()
-        self.assertEqual(20112, plan.data['id'])
 
-    def test_plan_invalid_payment_method(self):
-        with self.assertRaises(ValueError):
-            plan = Plan(api_key='api_key', name='Test Plan', color='red', payment_methods=['rice'])
+def test_create_credit_card_subscription():
+    _subscription = subscription.create(subscription_dictionary.CREDIT_CARD_SUBSCRIPTION)
+    assert _subscription['payment_method'] == 'credit_card'
 
-    def test_plan_without_api_key(self):
-        with self.assertRaises(ValueError):
-            plan = Plan(name='Test Plan', color='red')
 
-    @mock.patch('requests.get', mock.Mock(side_effect=fake_get_plan))
-    def test_get_plan_by_id(self):
-        plan = Plan(api_key='api_key')
-        plan.find_by_id(20112)
-        self.assertEqual(20112, plan.data['id'])
+def test_find_all():
+    subscription.create(subscription_dictionary.CREDIT_CARD_SUBSCRIPTION)
+    all_subscriptions = subscription.find_all()
+    assert all_subscriptions is not None
 
-    @mock.patch('requests.get', mock.Mock(side_effect=fake_error_plan))
-    def test_get_plan_by_id_error(self):
-        plan = Plan(api_key='api_key')
-        with self.assertRaises(PagarmeApiError):
-            plan.find_by_id(20112)
 
-    @mock.patch('requests.post', mock.Mock(side_effect=fake_error_plan))
-    def test_create_plan_error(self):
-        plan = Plan(api_key='api_key')
-        with self.assertRaises(PagarmeApiError):
-            plan.create()
+def test_find_by():
+    _subscription = subscription.create(subscription_dictionary.CREDIT_CARD_SUBSCRIPTION)
+    find_subscription = subscription.find_by(_subscription['id'])
+    assert find_subscription['id'] == _subscription['id']
 
-class SubscriptionTestCase(PagarmeTestCase):
 
-    @mock.patch('requests.post', mock.Mock(side_effect=fake_get_sub))
-    def test_can_create(self):
-        sub = Subscription(api_key='api_key',
-                plan_id=20112,
-                card_hash='longcardhash32432',
-                customer=Customer(email='email@test.com'))
-        sub.create()
-        self.assertEqual(16892, sub.data['id'])
+def test_update():
+    _subscription = subscription.create(subscription_dictionary.CREDIT_CARD_SUBSCRIPTION)
+    assert _subscription['payment_method'] == 'credit_card'
+    updated_subscription = subscription.update(_subscription['id'], subscription_dictionary.UPDATE)
+    assert updated_subscription['payment_method'] == 'boleto'
 
-    @mock.patch('requests.post', mock.Mock(side_effect=fake_get_sub))
-    def test_can_create_wiht_card_id(self):
-        sub = Subscription(api_key='api_key',
-                plan_id=20112,
-                card_id='longcardid32432',
-                customer=Customer(email='email@test.com'))
-        sub.create()
-        self.assertEqual(16892, sub.data['id'])
 
-    @mock.patch('requests.post', mock.Mock(side_effect=fake_error_sub))
-    def test_can_create_error(self):
-        sub = Subscription(api_key='api_key',
-                plan_id=20112,
-                card_hash='longcardhash32432',
-                customer=Customer(email='email@test.com'))
-        with self.assertRaises(PagarmeApiError):
-            sub.create()
+def test_cancel():
+    _subscription = subscription.create(subscription_dictionary.BOLETO_SUBSCRIPTION)
+    assert _subscription['status'] == 'unpaid'
+    canceled_subscription = subscription.cancel(_subscription['id'])
+    assert canceled_subscription['status'] == 'canceled'
 
-    def test_metadata_is_sent(self):
-        sub = Subscription(api_key='api_key',
-            plan_id=20112,
-            card_hash='longcardhash32432',
-            customer=Customer(email='email@test.com'),
-            metadata={'foo': 'bar'})
-        self.assertEqual('bar', sub.get_data()['metadata[foo]'])
 
-    def test_subscription_without_api_key(self):
-        with self.assertRaises(ValueError):
-            sub = Subscription(
-                plan_id=20112,
-                card_hash='longcardhash32432',
-                customer=Customer(email='email@test.com'))
+def test_transactions():
+    _subscription = subscription.create(subscription_dictionary.CREDIT_CARD_SUBSCRIPTION)
+    subscription_transactions = subscription.transactions(_subscription['id'])
+    assert subscription_transactions is not None
 
-    def test_subscription_without_invalid_plan_id(self):
-        with self.assertRaises(ValueError):
-            sub = Subscription(api_key='api_key',
-                    plan_id=20.112,
-                    card_hash='longcardhash32432',
-                    customer=Customer(email='email@test.com'))
 
-    def test_subscription_costumer_without_email(self):
-        with self.assertRaises(ValueError):
-            sub = Subscription(api_key='api_key',
-                    plan_id=20112,
-                    card_hash='longcardhash32432',
-                    customer=Customer())
+def test_settle_charges_params():
+    _subscription = subscription.create(subscription_dictionary.BOLETO_SUBSCRIPTION)
+    assert _subscription['status'] == 'unpaid'
+    settle_charge_subscription = subscription.settle_charges(_subscription['id'], subscription_dictionary.CHARGES)
+    assert settle_charge_subscription['status'] == 'paid'
+    assert settle_charge_subscription['settled_charges'] == [1]
 
-    @mock.patch('requests.get', mock.Mock(side_effect=fake_error_sub))
-    def test_get_subscription_by_id_error(self):
-        sub = Subscription(api_key='api_key')
-        with self.assertRaises(PagarmeApiError):
-            sub.find_by_id(16892)
-
-    def test_cancel_unboud_subscription(self):
-        sub = Subscription(api_key='api_key')
-        with self.assertRaises(NotBoundException):
-            sub.cancel()
-
-    @mock.patch('requests.get', mock.Mock(side_effect=fake_get_sub))
-    @mock.patch('requests.post', mock.Mock(side_effect=fake_get_sub))
-    def test_cancel_subscription(self):
-        sub = Subscription(api_key='api_key')
-        sub.find_by_id(16892)
-        sub.cancel()
-
-    @mock.patch('requests.get', mock.Mock(side_effect=fake_get_sub))
-    @mock.patch('requests.post', mock.Mock(side_effect=fake_error_sub))
-    def test_cancel_subscription_error(self):
-        sub = Subscription(api_key='api_key')
-        sub.find_by_id(16892)
-        with self.assertRaises(PagarmeApiError):
-            sub.cancel()
-
-    @mock.patch('requests.get', mock.Mock(side_effect=fake_request_list))
-    def test_get_subscriptions_transactions(self):
-        sub = Subscription(api_key='api_key')
-        sub.data['id'] = 16892
-        transactions = sub.transactions()
-        self.assertIsInstance(transactions[0], Transaction)
-
-    def test_get_subscriptions_transactions_unbounded(self):
-        sub = Subscription(api_key='api_key')
-        with self.assertRaises(NotBoundException):
-            transactions = sub.transactions()
-
-    @mock.patch('requests.get', mock.Mock(side_effect=fake_error_sub))
-    def test_get_subscriptions_transactions_fails(self):
-        sub = Subscription(api_key='api_key')
-        sub.data['id'] = 16892
-        with self.assertRaises(PagarmeApiError):
-            transactions = sub.transactions()
+def test_settle_charges_no_params():
+    _subscription = subscription.create(subscription_dictionary.BOLETO_SUBSCRIPTION)
+    assert _subscription['status'] == 'unpaid'
+    settle_charge_subscription = subscription.settle_charges(_subscription['id'])
+    assert settle_charge_subscription['status'] == 'paid'
+    assert settle_charge_subscription['settled_charges'] == [1]
