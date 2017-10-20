@@ -1,2 +1,3 @@
 requests==2.18.2
 requests[security]
+rsa==3.4.2
