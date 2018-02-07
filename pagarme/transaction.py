@@ -26,6 +26,10 @@ def find_by(search_params):
     return handler_request.get(transaction_routes.GET_TRANSACTION_BY, search_params)
 
 
+def find_by_id(transaction_id):
+    return handler_request.get(transaction_routes.GET_SPECIFIC_TRANSACTION_BY_ID.format(transaction_id))
+
+
 def generate_card_hash_key():
     return handler_request.get(transaction_routes.GENERATE_CARD_HASH_KEY)
 
