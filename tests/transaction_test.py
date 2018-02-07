@@ -75,6 +75,13 @@ def test_find_by():
     assert trx['id'] == find_trx[0]['id']
 
 
+def test_find_by_id():
+    trx = transaction.create(transaction_dictionary.VALID_CREDIT_CARD_TRANSACTION)
+    time.sleep(1)
+    found_trx = transaction.find_by_id(trx['id'])
+    assert trx['id'] == found_trx[0]['id']
+
+
 def test_find_specific_payable():
     trx = transaction.create(transaction_dictionary.VALID_CREDIT_CARD_TRANSACTION)
     all_payables = transaction.payables(trx['id'])
