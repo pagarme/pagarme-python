@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 
-__version__ = '3.1.0'
+__version__ = '3.1.1'
 __description__ = 'Pagar.me Python'
 __long_description__ = 'Python library for Pagar.me API'
 
