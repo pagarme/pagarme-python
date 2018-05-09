@@ -30,7 +30,7 @@ def test_find_all_plans():
 
 def test_find_by():
     _plan = plan.create(plan_dictionary.TRIAL_PLAN)
-    time.sleep(1)
+    time.sleep(3)
     search_params = {'id': str(_plan['id'])}
     find_plan = plan.find_by(search_params)
     assert _plan['id'] == find_plan[0]['id']
