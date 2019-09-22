@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
-from pagarme import sdk
 
 __description__ = 'Pagar.me Python'
 __long_description__ = 'Python library for Pagar.me API'
@@ -17,7 +16,7 @@ testing_extras = [
 
 setup(
     name='pagarme-python',
-    version=sdk.VERSION,
+    version='3.3.1',
     author=__author__,
     author_email=__author_email__,
     packages=find_packages(),
