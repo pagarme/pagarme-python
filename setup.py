@@ -31,9 +31,6 @@ def _find_version():
 
 __version__ = _find_version()
 
-install_requires = open('requirements.txt').read().strip().split('\n')
-
-
 setup(
     name='pagarme-python',
     version=__version__,
@@ -48,7 +45,7 @@ setup(
     keywords='Payment, pagarme',
     include_package_data=True,
     zip_safe=False,
-    install_requires=install_requires,
+    install_requires=['requests>=2.20.0'],
     classifiers=[
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',

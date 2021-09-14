@@ -10,7 +10,5 @@ python:
 install:
   - python setup.py install
   - pip install -r requirements-dev.txt
-script:
-  - py.test --cov pagarme
 after_success:
   - coveralls
