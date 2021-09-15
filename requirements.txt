@@ -1,1 +1,1 @@
-requests[security] (>= 2.18.2, <= 2.23.0)
+requests[security] (>= 2.18.2)
