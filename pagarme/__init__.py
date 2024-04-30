@@ -15,4 +15,5 @@ from pagarme import transaction
 from pagarme import transfer
 from pagarme import postback
 from pagarme import sdk
+from pagarme import kyc_link
 
