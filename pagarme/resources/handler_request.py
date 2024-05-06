@@ -1,4 +1,6 @@
+from json import dumps
 from .requests_retry import requests_retry_session
+from .exceptions import GatewayException
 
 TEMPORARY_COMPANY = 'https://api.pagar.me/1/companies/temporary'
 
@@ -54,4 +56,4 @@ def put(end_point, data = {}):
 
 
 def error(data):
-    raise Exception(data['errors'])
+    raise GatewayException(dumps(data['errors']))
