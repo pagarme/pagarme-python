@@ -30,26 +30,30 @@ def authentication_key(api_key=None, company_temporary=False):
 
 
 def delete(end_point, data = {}):
-    data['api_key'] = KEYS['api_key']
-    pagarme_response = requests_retry_session().delete(end_point, json=data)
+    session = requests_retry_session()
+    auth = (KEYS['api_key'], "")
+    pagarme_response = session.delete(end_point, auth = auth, json=data)
     return validate_response(pagarme_response)
 
 
-def get(end_point, data = {}):
-    data['api_key'] = KEYS['api_key']
-    pagarme_response = requests_retry_session().get(end_point, json=data)
+def get(end_point, data = {}):  
+    session = requests_retry_session()
+    auth = (KEYS['api_key'], "")
+    pagarme_response = session.get(end_point, auth = auth, json=data)
     return validate_response(pagarme_response)
 
 
 def post(end_point, data={}):
-    data['api_key'] = KEYS['api_key']
-    pagarme_response = requests_retry_session().post(end_point, json=data)
+    session = requests_retry_session()
+    auth = (KEYS['api_key'], "")
+    pagarme_response = session.post(end_point, auth = auth, json=data)
     return validate_response(pagarme_response)
 
 
 def put(end_point, data = {}):
-    data['api_key'] = KEYS['api_key']
-    pagarme_response = requests_retry_session().put(end_point, json=data)
+    session = requests_retry_session()
+    auth = (KEYS['api_key'], "")
+    pagarme_response = session.put(end_point, auth = auth, json=data)
     return validate_response(pagarme_response)
 
 
